@@ -1,0 +1,13 @@
+[uncaughtException] PathError [TypeError]: Missing parameter name at index 11: /api/auth/*; visit https://git.new/pathToRegexpError for info
+    at name (C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\server\node_modules\path-to-regexp\src\index.ts:225:13)
+    at parse (C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\server\node_modules\path-to-regexp\src\index.ts:242:62)
+    at pathToRegexp (C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\server\node_modules\path-to-regexp\src\index.ts:480:54)
+    at Object.match (C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\server\node_modules\path-to-regexp\src\index.ts:438:28)
+    at matcher (C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\server\node_modules\router\lib\layer.js:86:23)
+    at new Layer (C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\server\node_modules\router\lib\layer.js:93:62)
+    at Function.route (C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\server\node_modules\router\index.js:428:17)
+    at Function.route (C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\server\node_modules\express\lib\application.js:257:22)
+    at Function.all (C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\server\node_modules\express\lib\application.js:495:20)
+    at <anonymous> (C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\server\server.ts:31:5) {
+  originalPath: '/api/auth/*'
+}
