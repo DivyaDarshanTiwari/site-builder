@@ -1,5 +1,5 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
-import type { Project } from '../types';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import type { Project, SelectedElement } from '../types';
 import { iframeScript } from '../assets/assets';
 import EditorPanel from './EditorPanel';
 import LoaderSteps from './LoaderSteps';
@@ -18,7 +18,8 @@ export interface ProjectPreviewRef {
 const ProjectPreview = forwardRef<ProjectPreviewRef, ProjectPreviewProps>(({project, isGenerating, device = 'desktop', showEditorPanel = true}, ref) => {
 
     const iframeRef = useRef<HTMLIFrameElement>(null)
-    const [selectedElement, setSelectedElement] = useState<any>(null)
+    const [selectedElement, setSelectedElement] = useState<SelectedElement | null>(null)
+    const targetOrigin = globalThis.location.origin;
 
     const resolutions = {
         phone: 'w-[412px]',
@@ -29,21 +30,27 @@ const ProjectPreview = forwardRef<ProjectPreviewRef, ProjectPreviewProps>(({proj
     useImperativeHandle(ref, ()=>({
         getCode: ()=>{
             const doc = iframeRef.current?.contentDocument;
-            if(!doc) return undefined;
+            if (!doc) {
+                return undefined;
+            }
 
              // 1. Remove our selection class / attributes / outline from all elements
              doc.querySelectorAll('.ai-selected-element,[data-ai-selected]').forEach((el)=>{
                 el.classList.remove('ai-selected-element');
-                el.removeAttribute('data-ai-selected');
+                delete (el as HTMLElement).dataset.aiSelected;
                 (el as HTMLElement).style.outline = '';
              })
 
              // 2. Remove injected style + script from the document
              const previewStyle = doc.getElementById('ai-preview-style');
-             if(previewStyle) previewStyle.remove();
+             if (previewStyle) {
+                previewStyle.remove();
+             }
 
              const previewScript = doc.getElementById('ai-preview-script');
-             if (previewScript) previewScript.remove()
+             if (previewScript) {
+                previewScript.remove()
+             }
 
             // 3. Serialize clean HTML
             const html = doc.documentElement.outerHTML;
@@ -54,21 +61,21 @@ const ProjectPreview = forwardRef<ProjectPreviewRef, ProjectPreviewProps>(({proj
     useEffect(()=>{
         const handleMessage = (event: MessageEvent)=>{
             if(event.data.type === 'ELEMENT_SELECTED'){
-                setSelectedElement(event.data.payload);
+                setSelectedElement(event.data.payload as SelectedElement);
             }else if(event.data.type === 'CLEAR_SELECTION'){
                 setSelectedElement(null)
             }
         }
-        window.addEventListener('message', handleMessage);
-        return ()=> window.removeEventListener('message', handleMessage)
+        globalThis.addEventListener('message', handleMessage);
+        return ()=> globalThis.removeEventListener('message', handleMessage)
     },[])
 
-    const handleUpdate = (updates: any)=>{
+    const handleUpdate = (updates: Record<string, unknown>)=>{
         if(iframeRef.current?.contentWindow){
             iframeRef.current.contentWindow.postMessage({
                 type: 'UPDATE_ELEMENT',
                 payload: updates
-            }, '*')
+            }, targetOrigin)
         }
     }
 
@@ -89,6 +96,7 @@ const ProjectPreview = forwardRef<ProjectPreviewRef, ProjectPreviewProps>(({proj
         <>
         <iframe 
         ref={iframeRef}
+        title={`Project preview ${project.id}`}
         srcDoc={injectPreview(project.current_code)}
         className={`h-full max-sm:w-full ${resolutions[device]} mx-auto transition-all`}
         />
@@ -97,7 +105,7 @@ const ProjectPreview = forwardRef<ProjectPreviewRef, ProjectPreviewProps>(({proj
             onUpdate={handleUpdate} onClose={()=>{
                 setSelectedElement(null);
                 if(iframeRef.current?.contentWindow){
-                    iframeRef.current.contentWindow.postMessage({type: 'CLEAR_SELECTION_REQUEST'}, '*')
+                    iframeRef.current.contentWindow.postMessage({type: 'CLEAR_SELECTION_REQUEST'}, targetOrigin)
                 }
             }}/>
         )}

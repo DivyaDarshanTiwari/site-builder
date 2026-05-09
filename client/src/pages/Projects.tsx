@@ -1,12 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import type { Project } from '../types'
-import { ArrowBigDownDashIcon, EyeIcon, EyeOffIcon, FullscreenIcon, LaptopIcon, Loader2Icon, MessageSquareIcon, SaveIcon, SmartphoneIcon, TabletIcon, XIcon } from 'lucide-react'
+import { ArrowBigDownDashIcon, ChevronDownIcon, EyeIcon, EyeOffIcon, FolderArchiveIcon, FullscreenIcon, LaptopIcon, Loader2Icon, MessageSquareIcon, PaletteIcon, SaveIcon, SmartphoneIcon, TabletIcon, XIcon } from 'lucide-react'
 import Sidebar from '../components/Sidebar'
 import ProjectPreview, { type ProjectPreviewRef } from '../components/ProjectPreview'
 import api from '@/configs/axios'
 import { toast } from 'sonner'
 import { authClient } from '@/lib/auth-client'
+import { getErrorMessage } from '@/lib/error'
 
 const Projects = () => {
   const {projectId} = useParams()
@@ -21,20 +22,24 @@ const Projects = () => {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [isThemeOpen, setIsThemeOpen] = useState(false)
+  const [isApplyingTheme, setIsApplyingTheme] = useState(false)
+
+  const themes = ['Cyberpunk', 'Minimalist', 'Corporate', 'Dark Mode', 'Retro', 'Glassmorphism', 'Nature', 'Neon']
 
   const previewRef = useRef<ProjectPreviewRef>(null)
 
-  const fetchProject = async () => {
+  const fetchProject = useCallback(async () => {
     try {
       const { data } = await api.get(`/api/user/project/${projectId}`);
       setProject(data.project)
-      setIsGenerating(data.project.current_code ? false : true)
+      setIsGenerating(!data.project.current_code)
       setLoading(false)
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || error.message);
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error));
       console.log(error);
     }
-  }
+  }, [projectId])
 
   const saveProject = async () => {
     if(!previewRef.current) return;
@@ -44,8 +49,8 @@ const Projects = () => {
     try {
       const { data } = await api.put(`/api/project/save/${projectId}`, {code});
       toast.success(data.message)
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || error.message);
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error));
       console.log(error);
     }finally{
       setIsSaving(false);
@@ -55,10 +60,7 @@ const Projects = () => {
     // download code ( index.html )
   const downloadCode = ()=>{
     const code = previewRef.current?.getCode() || project?.current_code;
-    if(!code){
-      if(isGenerating){
-        return
-      }
+    if(!code) {
       return
     }
     const element = document.createElement('a');
@@ -69,49 +71,98 @@ const Projects = () => {
     element.click();
   }
 
+  const downloadZip = async () => {
+    try {
+      toast.info("Preparing ZIP file...");
+      const response = await api.get(`/api/project/export/${projectId}`, {
+        responseType: 'blob'
+      });
+      const url = globalThis.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${project?.name.replaceAll(/[^a-zA-Z0-9\s-_]/g, "").replaceAll(/\s+/g, "-").toLowerCase() || 'project'}.zip`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      globalThis.URL.revokeObjectURL(url);
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "Failed to download ZIP"));
+      console.log(error);
+    }
+  }
+
   const togglePublish = async () => {
     try {
       const { data } = await api.get(`/api/user/publish-toggle/${projectId}`);
       toast.success(data.message)
       setProject((prev)=> prev ? ({...prev, isPublished: !prev.isPublished}) : null)
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || error.message);
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error));
       console.log(error);
     }
   }
 
-  useEffect(()=>{
-    if(session?.user){
-      fetchProject();
-    }else if(!isPending && !session?.user){
-      navigate("/")
-      toast("Please login to view your projects")
+  const handleApplyTheme = async (theme: string) => {
+    setIsThemeOpen(false)
+    setIsApplyingTheme(true)
+    try {
+      const { data } = await api.post(`/api/project/theme/${projectId}`, { theme });
+      toast.success(data.message)
+      await fetchProject()
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error));
+      console.log(error);
+    } finally {
+      setIsApplyingTheme(false)
     }
-  },[session?.user])
+  }
+
+  useEffect(()=>{
+    if (isPending) {
+      return;
+    }
+
+    if (session?.user) {
+      fetchProject();
+      return;
+    }
+
+    navigate("/")
+    toast("Please login to view your projects")
+  },[session?.user, isPending, navigate, fetchProject])
 
   useEffect(()=>{
     if(project && !project.current_code){
       const intervalId = setInterval(fetchProject, 10000);
       return ()=> clearInterval(intervalId)
     }
-  },[project])
+  },[project, fetchProject])
 
   if(loading){
     return (
-      <>
       <div className="flex items-center justify-center h-screen">
         <Loader2Icon className="size-7 animate-spin text-violet-200"/>
       </div>
-      </>
     )
   }
-  return project ? (
+
+  if(!project) {
+    return (
+      <div className='flex items-center justify-center h-screen'>
+        <p className="text-2xl font-medium text-gray-200">Unable to load project!</p>
+      </div>
+    )
+  }
+
+  return (
     <div className='flex flex-col h-screen w-full bg-gray-900 text-white'>
       {/* builder navbar  */}
       <div className='flex max-sm:flex-col sm:items-center gap-4 px-4 py-2 no-scrollbar'>
         {/* left  */}
         <div className='flex items-center gap-2 sm:min-w-90 text-nowrap'>
-          <img src="/favicon.svg" alt="logo" className="h-6 cursor-pointer" onClick={()=> navigate('/')}/>
+          <button type="button" onClick={()=> navigate('/')} className="cursor-pointer">
+            <img src="/favicon.svg" alt="logo" className="h-6"/>
+          </button>
           <div className='max-w-64 sm:max-w-xs'>
             <p className='text-sm text-medium capitalize truncate'>{project.name}</p>
             <p className='text-xs text-gray-400 -mt-0.5'>Previewing last saved version</p>
@@ -132,6 +183,28 @@ const Projects = () => {
         </div>
         {/* right  */}
         <div className='flex items-center justify-end gap-3 flex-1 text-xs sm:text-sm'>
+              {/* Theme Shifter */}
+              <div className='relative'>
+                <button
+                  onClick={() => setIsThemeOpen(!isThemeOpen)}
+                  disabled={isApplyingTheme || isGenerating}
+                  className='max-sm:hidden bg-gray-800 hover:bg-gray-700 text-white px-3.5 py-1 flex items-center gap-2 rounded sm:rounded-sm transition-colors border border-gray-700'>
+                  {isApplyingTheme ? <Loader2Icon className="animate-spin" size={16}/> : <PaletteIcon size={16}/>}
+                  Theme <ChevronDownIcon size={14}/>
+                </button>
+                {isThemeOpen && (
+                  <div className='absolute top-full mt-1 right-0 bg-gray-800 border border-gray-700 rounded-md shadow-xl z-50 min-w-40 py-1'>
+                    {themes.map((theme) => (
+                      <button
+                        key={theme}
+                        onClick={() => handleApplyTheme(theme)}
+                        className='w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-white transition-colors'>
+                        {theme}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               <button onClick={saveProject} disabled={isSaving} className='max-sm:hidden bg-gray-800 hover:bg-gray-700 text-white px-3.5 py-1 flex items-center gap-2 rounded sm:rounded-sm transition-colors border border-gray-700'>
                 {isSaving ? <Loader2Icon className="animate-spin" size={16}/> : <SaveIcon size={16}/>} Save
               </button>
@@ -140,6 +213,9 @@ const Projects = () => {
               </Link>
               <button onClick={downloadCode} className='bg-linear-to-br from-blue-700 to-blue-600 hover:from-blue-600 hover:to-blue-500 text-white px-3.5 py-1 flex items-center gap-2 rounded sm:rounded-sm transition-colors'>
                 <ArrowBigDownDashIcon size={16} /> Download
+              </button>
+              <button onClick={downloadZip} className='bg-linear-to-br from-emerald-700 to-emerald-600 hover:from-emerald-600 hover:to-emerald-500 text-white px-3.5 py-1 flex items-center gap-2 rounded sm:rounded-sm transition-colors'>
+                <FolderArchiveIcon size={16} /> ZIP
               </button>
               <button onClick={togglePublish} className='bg-linear-to-br from-indigo-700 to-indigo-600 hover:from-indigo-600 hover:to-indigo-500 text-white px-3.5 py-1 flex items-center gap-2 rounded sm:rounded-sm transition-colors'>
                 {project.isPublished ?
@@ -156,12 +232,6 @@ const Projects = () => {
                 <ProjectPreview ref={previewRef} project={project} isGenerating={isGenerating} device={device}/>
               </div>
       </div>
-    </div>
-  )
-  : 
-  (
-    <div className='flex items-center justify-center h-screen'>
-      <p className="text-2xl font-medium text-gray-200">Unable to load project!</p>
     </div>
   )
 }

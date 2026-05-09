@@ -5,7 +5,7 @@ const Loading = () => {
 
     useEffect(()=>{
         setTimeout(()=>{
-            window.location.href = '/'
+            globalThis.location.href = '/'
         },6000)
     },[])
 

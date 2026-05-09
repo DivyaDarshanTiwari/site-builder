@@ -1,20 +1,10 @@
 import { X } from 'lucide-react';
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import type { SelectedElement } from '../types';
 
 interface EditorPanelProps {
-    selectedElement: {
-        tagName: string;
-        className: string;
-        text: string;
-         styles: {
-            padding: string;
-            margin: string;
-            backgroundColor: string;
-            color: string;
-            fontSize: string;
-         };
-    } | null;
-    onUpdate: (updates: any)=> void;
+    selectedElement: SelectedElement | null;
+    onUpdate: (updates: Record<string, unknown>)=> void;
     onClose: ()=> void;
 }
 
@@ -53,41 +43,41 @@ const EditorPanel = ({selectedElement, onUpdate, onClose}: EditorPanelProps) => 
     </div>
     <div className='space-y-4 text-black'>
         <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Text Content</label>
-            <textarea value={values.text} onChange={(e)=>handleChange('text', e.target.value)} className='w-full text-sm p-2 border border-gray-400 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none min-h-20'/>
+            <label htmlFor="editor-text-content" className="block text-xs font-medium text-gray-500 mb-1">Text Content</label>
+            <textarea id="editor-text-content" value={values.text} onChange={(e)=>handleChange('text', e.target.value)} className='w-full text-sm p-2 border border-gray-400 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none min-h-20'/>
         </div>
         <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Class Name</label>
-            <input type='text' value={values.className || ''} onChange={(e)=>handleChange('className', e.target.value)} className='w-full text-sm p-2 border border-gray-400 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none'/>
+            <label htmlFor="editor-class-name" className="block text-xs font-medium text-gray-500 mb-1">Class Name</label>
+            <input id="editor-class-name" type='text' value={values.className || ''} onChange={(e)=>handleChange('className', e.target.value)} className='w-full text-sm p-2 border border-gray-400 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none'/>
         </div>
 
         <div className='grid grid-cols-2 gap-3'>
             <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Padding</label>
-                <input type='text' 
+                <label htmlFor="editor-padding" className="block text-xs font-medium text-gray-500 mb-1">Padding</label>
+                <input id="editor-padding" type='text' 
                 value={values.styles.padding} 
                 onChange={(e)=>handleStyleChange('padding', e.target.value)} className='w-full text-sm p-2 border border-gray-400 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none'/>
             </div>
             <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Margin</label>
-                <input type='text' 
+                <label htmlFor="editor-margin" className="block text-xs font-medium text-gray-500 mb-1">Margin</label>
+                <input id="editor-margin" type='text' 
                 value={values.styles.margin} 
                 onChange={(e)=>handleStyleChange('margin', e.target.value)} className='w-full text-sm p-2 border border-gray-400 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none'/>
             </div>
         </div>
         <div className='grid grid-cols-2 gap-3'>
             <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Font Size</label>
-                <input type='text' 
+                <label htmlFor="editor-font-size" className="block text-xs font-medium text-gray-500 mb-1">Font Size</label>
+                <input id="editor-font-size" type='text' 
                 value={values.styles.fontSize} 
                 onChange={(e)=>handleStyleChange('fontSize', e.target.value)} className='w-full text-sm p-2 border border-gray-400 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none'/>
             </div>
         </div>
         <div className='grid grid-cols-2 gap-3'>
             <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Background</label>
+                <label htmlFor="editor-background-color" className="block text-xs font-medium text-gray-500 mb-1">Background</label>
                 <div className='flex items-center gap-2 border border-gray-400 rounded-md p-1'>
-                    <input type='color' 
+                    <input id="editor-background-color" type='color' 
                 value={values.styles.backgroundColor === 'rgba(0, 0, 0, 0)' ? '#ffffff' : values.styles.backgroundColor} 
                 onChange={(e)=>handleStyleChange('backgroundColor', e.target.value)} className='w-6 h-6 cursor-pointer'/>
                 <span className='text-xs text-gray-600 truncate'>{values.styles.backgroundColor}</span>
@@ -95,9 +85,9 @@ const EditorPanel = ({selectedElement, onUpdate, onClose}: EditorPanelProps) => 
                 
             </div>
             <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Text Color</label>
+                <label htmlFor="editor-text-color" className="block text-xs font-medium text-gray-500 mb-1">Text Color</label>
                 <div className='flex items-center gap-2 border border-gray-400 rounded-md p-1'>
-                    <input type='color' 
+                    <input id="editor-text-color" type='color' 
                 value={values.styles.color} 
                 onChange={(e)=>handleStyleChange('color', e.target.value)} className='w-6 h-6 cursor-pointer'/>
                 <span className='text-xs text-gray-600 truncate'>{values.styles.color}</span>

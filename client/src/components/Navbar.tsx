@@ -25,15 +25,12 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-3">
-          {!session?.user ? (
+          {session?.user ? (
+            <UserButton size='icon'/>
+          ) : (
             <button onClick={()=> navigate('/auth/signin')} className="px-6 py-1.5 max-sm:text-sm bg-indigo-600 active:scale-95 hover:bg-indigo-700 transition rounded">
               Get started
             </button>
-          ) : (
-            <>
-            <UserButton size='icon'/>
-            </>
-            
           ) 
             }
 
@@ -43,6 +40,7 @@ const Navbar = () => {
           </div>
 
           
+
         </nav>
         {/* Mobile Menu */}
         {menuOpen && (

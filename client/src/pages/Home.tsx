@@ -4,6 +4,7 @@ import { Loader2Icon } from 'lucide-react';
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { getErrorMessage } from '@/lib/error';
 
 const Home = () => {
 
@@ -25,9 +26,9 @@ const Home = () => {
       const {data} = await api.post('/api/user/project', {initial_prompt: input});
       setLoading(false);
       navigate(`/projects/${data.projectId}`)
-    } catch (error: any) {
+    } catch (error: unknown) {
       setLoading(false);
-      toast.error(error?.response?.data?.message || error.message);
+      toast.error(getErrorMessage(error));
       console.log(error);
     }
 
@@ -49,11 +50,11 @@ const Home = () => {
         <form onSubmit={onSubmitHandler} className="bg-white/10 max-w-2xl w-full rounded-xl p-4 mt-10 border border-indigo-600/70 focus-within:ring-2 ring-indigo-500 transition-all">
           <textarea onChange={e => setInput(e.target.value)} className="bg-transparent outline-none text-gray-300 resize-none w-full" rows={4} placeholder="Describe your presentation in details" required />
           <button className="ml-auto flex items-center gap-2 bg-gradient-to-r from-[#CB52D4] to-indigo-600 rounded-md px-4 py-2">
-            {!loading ? 'Create with AI' : (
+            {loading ? (
               <>
               Creating <Loader2Icon className='animate-spin size-4 text-white'/>
               </>
-            )}
+            ) : 'Create with AI'}
             
           </button>
         </form>

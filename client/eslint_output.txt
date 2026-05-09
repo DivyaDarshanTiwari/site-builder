@@ -1,0 +1,104 @@
+
+> client@0.0.0 lint
+> eslint .
+
+
+C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\client\src\components\EditorPanel.tsx
+  17:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\client\src\components\ProjectPreview.tsx
+  21:60  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  66:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\client\src\components\Sidebar.tsx
+   28:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   45:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   73:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  101:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\client\src\pages\Community.tsx
+   3:36  error  'PlusIcon' is defined but never used      @typescript-eslint/no-unused-vars
+   3:46  error  'TrashIcon' is defined but never used     @typescript-eslint/no-unused-vars
+  22:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  41:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\client\src\pages\Home.tsx
+  28:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\client\src\pages\MyProjects.tsx
+   5:10  error    'dummyProjects' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  22:25  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+  35:25  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+  43:13  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\client\src\pages\MyProjects.tsx:43:13
+  41 |     useEffect(()=>{
+  42 |         if(session?.user && !isPending){
+> 43 |             fetchProjects()
+     |             ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  44 |         }else if(!isPending && !session?.user){
+  45 |             navigate('/');
+  46 |             toast('Please login to view your projects');  react-hooks/set-state-in-effect
+  48:7   warning  React Hook useEffect has missing dependencies: 'isPending' and 'navigate'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
+
+C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\client\src\pages\Preview.tsx
+  30:20  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-explicit-any
+  38:7   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\client\src\pages\Preview.tsx:38:7
+  36 |   useEffect(()=>{
+  37 |     if(!isPending && session?.user){
+> 38 |       fetchCode()
+     |       ^^^^^^^^^ Avoid calling setState() directly within an effect
+  39 |     }
+  40 |   },[session?.user])
+  41 |  react-hooks/set-state-in-effect
+  40:5   warning  React Hook useEffect has missing dependencies: 'fetchCode' and 'isPending'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         react-hooks/exhaustive-deps
+
+C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\client\src\pages\Projects.tsx
+   37:21  error    Unexpected any. Specify a different type                                                                                                        @typescript-eslint/no-explicit-any
+   51:21  error    Unexpected any. Specify a different type                                                                                                        @typescript-eslint/no-explicit-any
+   90:21  error    Unexpected any. Specify a different type                                                                                                        @typescript-eslint/no-explicit-any
+  101:21  error    Unexpected any. Specify a different type                                                                                                        @typescript-eslint/no-explicit-any
+  114:21  error    Unexpected any. Specify a different type                                                                                                        @typescript-eslint/no-explicit-any
+  129:5   warning  React Hook useEffect has missing dependencies: 'fetchProject', 'isPending', and 'navigate'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  136:5   warning  React Hook useEffect has a missing dependency: 'fetchProject'. Either include it or remove the dependency array                                 react-hooks/exhaustive-deps
+
+C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\client\src\pages\View.tsx
+   3:10  error    'dummyProjects' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+  20:21  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-explicit-any
+  27:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\client\src\pages\View.tsx:27:5
+  25 |
+  26 |   useEffect(()=>{
+> 27 |     fetchCode()
+     |     ^^^^^^^^^ Avoid calling setState() directly within an effect
+  28 |   },[])
+  29 |
+  30 |   if(loading){  react-hooks/set-state-in-effect
+  28:5   warning  React Hook useEffect has a missing dependency: 'fetchCode'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react-hooks/exhaustive-deps
+
+C:\Users\LENOVO\Dropbox\PC\Downloads\qksskYtihP3GUMytctCLs1\site-builder\client\src\types\index.ts
+  12:11  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 32 problems (27 errors, 5 warnings)
+

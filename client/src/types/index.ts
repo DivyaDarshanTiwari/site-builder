@@ -9,7 +9,7 @@ export interface User {
 
 export interface Message {
     id: string;
-    role: any;
+    role: 'user' | 'assistant';
     content: string;
     timestamp: string;
 }
@@ -34,4 +34,17 @@ export interface Project {
     conversation: Message[];
     versions: Version[];
     current_version_index: string;
+}
+
+export interface SelectedElement {
+    tagName: string;
+    className: string;
+    text: string;
+    styles: {
+        padding: string;
+        margin: string;
+        backgroundColor: string;
+        color: string;
+        fontSize: string;
+    };
 }
