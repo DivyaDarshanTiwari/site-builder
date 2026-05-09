@@ -15,8 +15,6 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.1.0",
     "@prisma/client": "^7.1.0",
-    "@types/archiver": "^7.0.0",
-    "archiver": "^8.0.0",
     "better-auth": "^1.4.5",
     "cors": "^2.8.5",
     "docx": "^9.6.1",

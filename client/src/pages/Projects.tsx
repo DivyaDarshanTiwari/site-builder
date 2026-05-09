@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import type { Project } from '../types'
-import { ArrowBigDownDashIcon, ChevronDownIcon, EyeIcon, EyeOffIcon, FolderArchiveIcon, FullscreenIcon, LaptopIcon, Loader2Icon, MessageSquareIcon, PaletteIcon, SaveIcon, SmartphoneIcon, TabletIcon, XIcon } from 'lucide-react'
+import { ArrowBigDownDashIcon, ChevronDownIcon, EyeIcon, EyeOffIcon, FullscreenIcon, LaptopIcon, Loader2Icon, MessageSquareIcon, PaletteIcon, SaveIcon, SmartphoneIcon, TabletIcon, XIcon } from 'lucide-react'
 import Sidebar from '../components/Sidebar'
 import ProjectPreview, { type ProjectPreviewRef } from '../components/ProjectPreview'
 import api from '@/configs/axios'
@@ -71,25 +71,6 @@ const Projects = () => {
     element.click();
   }
 
-  const downloadZip = async () => {
-    try {
-      toast.info("Preparing ZIP file...");
-      const response = await api.get(`/api/project/export/${projectId}`, {
-        responseType: 'blob'
-      });
-      const url = globalThis.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `${project?.name.replaceAll(/[^a-zA-Z0-9\s-_]/g, "").replaceAll(/\s+/g, "-").toLowerCase() || 'project'}.zip`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      globalThis.URL.revokeObjectURL(url);
-    } catch (error: unknown) {
-      toast.error(getErrorMessage(error, "Failed to download ZIP"));
-      console.log(error);
-    }
-  }
 
   const togglePublish = async () => {
     try {
@@ -213,9 +194,6 @@ const Projects = () => {
               </Link>
               <button onClick={downloadCode} className='bg-linear-to-br from-blue-700 to-blue-600 hover:from-blue-600 hover:to-blue-500 text-white px-3.5 py-1 flex items-center gap-2 rounded sm:rounded-sm transition-colors'>
                 <ArrowBigDownDashIcon size={16} /> Download
-              </button>
-              <button onClick={downloadZip} className='bg-linear-to-br from-emerald-700 to-emerald-600 hover:from-emerald-600 hover:to-emerald-500 text-white px-3.5 py-1 flex items-center gap-2 rounded sm:rounded-sm transition-colors'>
-                <FolderArchiveIcon size={16} /> ZIP
               </button>
               <button onClick={togglePublish} className='bg-linear-to-br from-indigo-700 to-indigo-600 hover:from-indigo-600 hover:to-indigo-500 text-white px-3.5 py-1 flex items-center gap-2 rounded sm:rounded-sm transition-colors'>
                 {project.isPublished ?
