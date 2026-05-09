@@ -8,7 +8,7 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
             headers: fromNodeHeaders(req.headers)
         })
 
-        if(!session || !session?.user){
+        if(!session?.user){
             return res.status(401).json({ message: 'Unauthorized user'})
         }
 
